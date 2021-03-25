@@ -1,2 +1,0 @@
-Подключить что-то Preload:
-$APPLICATION->AddHeadString('<link rel="preload" as="style" href="' . SITE_TEMPLATE_PATH . '/assets/css/fonts.css" onload="this.rel=\'stylesheet\'" />');
