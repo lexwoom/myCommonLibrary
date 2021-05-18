@@ -62,4 +62,4 @@ $(document).ready(function(){
   setTimeout (function(){autoTypeduo(".autosubtitle",50)}, 2700);
   setTimeout (function() {$(".cursorduo").css("display", "none")}, 6000);
 });
-gitted
+
