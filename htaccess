@@ -8,13 +8,6 @@ RewriteBase /
 Options +FollowSymLinks
    # Разрешает переход по символическим ссылкам.
 
-############################################################################
-#### Перенаправляем протокол https на http                              ####
-############################################################################
-RewriteCond %{HTTPS} on
-   # Проверяем наличие https в URL.
-RewriteRule ^.*$ http://%{SERVER_NAME}%{REQUEST_URI}
-   # Перенаправляем протокол на http.
 
 ############################################################################
 #### Выбор основного зеркала (или с www или без www)                    ####
@@ -31,69 +24,25 @@ RewriteRule ^.*$ http://%{SERVER_NAME}%{REQUEST_URI}
 #RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
    # Перенаправляем URL на домен c www.
 
-############################################################################
-#### Убираем повторяющиеся слеши (/) в URL                              ####
-############################################################################
-RewriteCond %{REQUEST_URI} ^(.*)/{2,}(.*)$
-   # Проверяем, повторяется ли слеш (//) более двух раз.
-RewriteRule . %1/%2 [R=301,L]
-   # Исключаем все лишние слеши.
 
-############################################################################
-#### Убираем слеши в конце URL для статических файлов (содержит точку)  ####
-############################################################################
-RewriteCond %{REQUEST_URI} \..+$  
-   # Если файл содержит точку.
-RewriteCond %{REQUEST_FILENAME} !-d   
-   # И это не директория.
-RewriteCond %{REQUEST_FILENAME} -f
-   # Является файлом.
-RewriteCond %{REQUEST_URI} ^(.+)/$      
-   # И в конце URL есть слеш.
-RewriteRule ^(.+)/$ /$1 [R=301,L]     
-   # Исключить слеш.
-
-############################################################################
-#### Добавляем слеш(/), если его нет, и это не файл.                    ####
-############################################################################
-RewriteCond %{REQUEST_URI} !(.*)/$
-   # Если слеша в конце нет.
-RewriteCond %{REQUEST_FILENAME} !-f
-   # Не является файлом.
-RewriteCond %{REQUEST_URI} !\..+$
-   # В URL нет точки (файл).
-RewriteRule ^(.*)$ $1/ [L,R=301]
-   # Добавляем слеш в конце.
-
-############################################################################
-#### Убираем index.php, если он есть в конце URL                        ####
-############################################################################
-RewriteCond %{REQUEST_METHOD} =GET
-   # Выявляем GET запрос в URL (не POST).
-RewriteCond %{REQUEST_URI} ^(.*)/index\.php$
-   # URL cодержит index.php в конце.
-RewriteRule ^(.*)$ %1/ [R=301,L]
-   # Удалить index.php из URL.
-
-############################################################################
-#### Конец общей части, далее следует собственные директивы .htaccess   ####
-############################################################################
-
-#Редирект с индексной страницы php на саму папку
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.php.*\ HTTP/
-    RewriteRule ^index\.php$ https://www.gmed.ru/ [R=301,L]
+    #Редирект с индексной страницы php на саму папку
+    RewriteCond %{THE_REQUEST} /(.*)index.php.*$
+    RewriteCond %{THE_REQUEST} !bitrix/admin/
+    RewriteRule .* /%1 [R=301,L]
 
 
     #Редирект с индексной страницы html на саму папку
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.html\ HTTP/
-    RewriteRule ^index\.html$ https://www.gmed.ru/ [R=301,L]
+    RewriteCond %{THE_REQUEST} /(.*)index.html.*$
+    RewriteCond %{THE_REQUEST} !bitrix/admin/
+    RewriteRule .* /%1 [R=301,L]
 
     #Убираем повторяющиеся слеши (/) в URL
     RewriteCond %{REQUEST_URI} ^(.*?)\/{2,}(.*?)$
-        RewriteRule . %1/%2 [L,R=301]
-        RewriteCond %{THE_REQUEST} //
-        RewriteRule .* /$0 [R=301,L]
-#убираем знак вопроса в конце url
-RewriteCond %{THE_REQUEST} ^[^\s]+\s+[^?]*?\?
-RewriteCond %{QUERY_STRING} ^$
-RewriteRule .? %{REQUEST_URI}? [R=301,L]
+    RewriteRule . %1/%2 [L,R=301]
+    RewriteCond %{THE_REQUEST} //
+    RewriteRule .* /$0 [R=301,L]
+    
+    #убираем знак вопроса в конце url
+    RewriteCond %{THE_REQUEST} ^[^\s]+\s+[^?]*?\?
+    RewriteCond %{QUERY_STRING} ^$
+    RewriteRule .? %{REQUEST_URI}? [R=301,L]
